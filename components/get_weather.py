@@ -10,7 +10,7 @@ from pyproj import Proj, transform
 from time import sleep
 
 config = configparser.ConfigParser()
-config.read('../config.ini')
+config.read('config.ini')
 
 url = config['WEATHER']['URL']
 
@@ -21,10 +21,6 @@ def get_weather(lon, lat, code='SFKR'):
     :param lon:
     :return:
     """
-    #
-    # Convert Input Coord to Closest
-    #
-    pass
     #
     # Convert Coord from WGS84(LatLong) to UTM-K
     #
@@ -76,7 +72,6 @@ def get_weather(lon, lat, code='SFKR'):
             df = pd.json_normalize(body)
             temp_dfs.append(df)
             print(month_to_read)
-            sleep(0.005)
         df_per_year.append(
             pd.concat(temp_dfs).reset_index(drop=True)
         )
@@ -123,6 +118,3 @@ def get_weather(lon, lat, code='SFKR'):
                 wth.write('\n')
 
     return True
-
-
-get_weather(126.557727, 36.3863365)

@@ -9,12 +9,13 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from enum import Enum
 from typing import Optional, Tuple, List
+from components import get_weather
 
 
 #
 # Define Env const
 # Todo: to env variable
-WTH_PATH = 'CSM'
+WTH_PATH = os.getcwd()
 SOL_PATH = 'CSM'
 X_PATH = 'CSM'
 
@@ -26,6 +27,7 @@ def run_csm(xfile):
     #
     # Run CSM
     #
+    print(xfile)
     subprocess.call('docker run --rm -v {0}/temp:/data -w /data dssat-csm A {1}'.format(
         os.getcwd(),
         xfile
@@ -137,7 +139,7 @@ async def root():
 
 
 @app.get("/{crop}", response_model=ResponseOut)
-async def main(crop: CropCode):
+async def main(crop: CropCode, farm: FarmInfo):
     #
     # Check Farmland by Coordinate
     #
@@ -153,8 +155,9 @@ async def main(crop: CropCode):
     #
     # Create Farmland's Weather DATA
     #
-    whether_code = 'UYLE'
-    whether_files = [x for x in os.listdir(WTH_PATH) if x.startswith(whether_code)]
+    whether_code = 'SFKR'
+    get_weather.get_weather(farm.xcoord, farm.ycoord, code=whether_code)
+    whether_files = [x for x in os.listdir(os.getcwd()) if x.startswith(whether_code)]
     for wth in whether_files:
         shutil.copy(os.path.join(WTH_PATH, wth), os.path.join('temp', wth))
 
@@ -181,7 +184,8 @@ async def main(crop: CropCode):
     #
     # Run and Parse CSM
     #
-    output = run_csm(os.path.join('temp', x_file))
+    print(x_file)
+    output = run_csm(x_file)
     shutil.rmtree('temp')
 
     return JSONResponse(content=jsonable_encoder(output))
