@@ -19,7 +19,7 @@ WTH_PATH = os.getcwd()
 SOL_PATH = 'CSM'
 X_PATH = 'CSM'
 
-
+# GITHUB TEST
 #
 # Run, Parse CSM
 #
